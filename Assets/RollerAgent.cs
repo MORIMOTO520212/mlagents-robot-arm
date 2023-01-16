@@ -16,7 +16,7 @@ public class RollerAgent : Agent
     public Transform Target;
     public override void OnEpisodeBegin()
     {
-        // If the Agent fell, zero its momentum
+        // ボールが落下した場合、初期スポットへ戻す。速度をリセットする。
         if (this.transform.localPosition.y < 0)
         {
             this.rBody.angularVelocity = Vector3.zero;
@@ -24,7 +24,7 @@ public class RollerAgent : Agent
             this.transform.localPosition = new Vector3(0, 0.5f, 0);
         }
 
-        // Move the target to a new spot
+        // ターゲットを新しいスポットに移動させます
         Target.localPosition = new Vector3(Random.value * 8 - 4,
                                            0.5f,
                                            Random.value * 8 - 4);

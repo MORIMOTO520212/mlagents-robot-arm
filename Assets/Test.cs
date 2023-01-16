@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
+    private HingeJoint[] joints; // クラス<型>
+
+    void Start()
+    {
+        joints = GetComponentsInChildren<HingeJoint>(); // クラス<型>
+    }
+
     void Update()
     {
-        float dx = Input.GetAxis("Horizontal") * Time.deltaTime * 3;
-        float dz = Input.GetAxis("Vertical") * Time.deltaTime * 3;
-        transform.position = new Vector3 (
-        transform.position.x + dx, 4, transform.position.z + dz
-        );
+        Debug.Log(joints[0].angle);
     }
 }
