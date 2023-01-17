@@ -9,10 +9,17 @@ public class Test : MonoBehaviour
     void Start()
     {
         joints = GetComponentsInChildren<HingeJoint>(); // クラス<型>
+
+        JointMotor motor0 = joints[0].motor;
+        JointMotor motor1 = joints[1].motor;
+
+        motor0.force = 100;
+        motor0.targetVelocity = 60;
+        joints[0].motor = motor0;
     }
 
     void Update()
     {
-        Debug.Log(joints[0].angle);
+        //Debug.Log(joints[0].angle);
     }
 }

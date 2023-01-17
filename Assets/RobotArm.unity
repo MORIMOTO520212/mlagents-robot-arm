@@ -283,7 +283,7 @@ HingeJoint:
   m_GameObject: {fileID: 497106394}
   m_ConnectedBody: {fileID: 852686639}
   m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 0, z: 0}
+  m_Anchor: {x: 0, y: -0.01, z: 0}
   m_Axis: {x: 0, y: 0, z: -1}
   m_AutoConfigureConnectedAnchor: 1
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
@@ -292,15 +292,15 @@ HingeJoint:
     spring: 0
     damper: 0
     targetPosition: 0
-  m_UseMotor: 0
+  m_UseMotor: 1
   m_Motor:
     targetVelocity: 0
     force: 0
     freeSpin: 0
-  m_UseLimits: 0
+  m_UseLimits: 1
   m_Limits:
-    min: 0
-    max: 0
+    min: -87.669334
+    max: 116.33454
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0
@@ -546,7 +546,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 852686636}
-  m_LocalRotation: {x: 0, y: 0, z: -0.2917039, w: 0.9565087}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.537, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -556,7 +556,7 @@ Transform:
   - {fileID: 497106395}
   m_Father: {fileID: 1239997354}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -33.92}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!59 &852686638
 HingeJoint:
   m_ObjectHideFlags: 0
@@ -566,7 +566,7 @@ HingeJoint:
   m_GameObject: {fileID: 852686636}
   m_ConnectedBody: {fileID: 367101045}
   m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 0, z: 0}
+  m_Anchor: {x: 0, y: -0.01, z: 0}
   m_Axis: {x: 0, y: 0, z: -1}
   m_AutoConfigureConnectedAnchor: 1
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
@@ -575,15 +575,15 @@ HingeJoint:
     spring: 0
     damper: 0
     targetPosition: 0
-  m_UseMotor: 0
+  m_UseMotor: 1
   m_Motor:
     targetVelocity: 0
     force: 0
     freeSpin: 0
-  m_UseLimits: 0
+  m_UseLimits: 1
   m_Limits:
-    min: 0
-    max: 0
+    min: -91.21503
+    max: 132.35796
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0
@@ -911,7 +911,6 @@ GameObject:
   - component: {fileID: 1239997358}
   - component: {fileID: 1239997357}
   - component: {fileID: 1239997356}
-  - component: {fileID: 1239997355}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -936,18 +935,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1239997355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1239997353}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40cafd8c02b6bb74b8a7fc6a0784db43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1239997356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -985,7 +972,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1239997353}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c89b33102a8cd4e409b9de0c0439cd2a, type: 3}
   m_Name: 
@@ -994,6 +981,8 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  target: {fileID: 960648234}
+  endEffector: {fileID: 698887970}
 --- !u!114 &1239997359
 MonoBehaviour:
   m_ObjectHideFlags: 0
