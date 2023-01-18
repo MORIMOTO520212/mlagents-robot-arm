@@ -11,26 +11,29 @@ public class RobotArmAgent : Agent
     public Transform target; // ターゲットオブジェクト
     public Transform endEffector; // エンドエフェクタオブジェクト
 
-    private HingeJoint[] joints;
+    private GameObject[] axis = new GameObject[2];
+    
 
     // 1度限りの実行
     public override void Initialize()
     {
-        // ジョイントの取得
-        joints = GetComponentsInChildren<HingeJoint>(); // クラス<型>
+        // 軸オブジェクトの取得
+        axis[0] = this.transform.Find("Axis1").gameObject;
+        axis[1] = axis[0].transform.Find("Axis2").gameObject;
     }
 
     // 1エピソード限りの実行
     public override void OnEpisodeBegin()
     {
-        JointMotor motor;
-
-        foreach (HingeJoint joint in joints)
+        foreach (GameObject ax in axis)
         {
-            motor = joint.motor;
-            motor.force = 0;
+            // アームを垂直に戻す
+
+            // 力を0にする
+            JointMotor motor = ax.GetComponent<HingeJoint>().motor;
+            motor.force = 500;
             motor.targetVelocity = 0;
-            joint.motor = motor;
+            ax.GetComponent<HingeJoint>().motor = motor; // 設定を代入
         }
     }
 
@@ -45,14 +48,26 @@ public class RobotArmAgent : Agent
     {
         float setForce = 100;
 
-        JointMotor motor;
-
+        // アームを動かす
         for (int i = 0; i < actionBuffers.ContinuousActions.Length; i++)
         {
-            motor = joints[i].motor;
-            motor.force = actionBuffers.ContinuousActions[i] * setForce;
-            motor.targetVelocity = 0;
-            joints[i].motor = motor;
+            JointMotor motor = axis[i].GetComponent<HingeJoint>().motor;
+            motor.targetVelocity = actionBuffers.ContinuousActions[i] * setForce;
+            axis[i].GetComponent<HingeJoint>().motor = motor; // 設定を代入
         }
+
+        // 距離を計測
+        float distanceToTarget = Vector3.Distance(endEffector.localPosition, target.localPosition);
+        if (distanceToTarget < 1f)
+        {
+
+        }
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var continuousActionsOut = actionsOut.ContinuousActions;
+        continuousActionsOut[0] = Input.GetAxis("Horizontal");
+        continuousActionsOut[1] = Input.GetAxis("Vertical");
     }
 }
