@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    private GameObject axis;
+    public Transform target;      // ターゲットオブジェクト
+    public Transform endEffector; // エンドエフェクタオブジェクト
 
     void Start()
     {
-        axis = this.transform.Find("Axis1").gameObject;
-        HingeJoint axisJoint = axis.GetComponent<HingeJoint>();
-        Debug.Log( axisJoint.angle );
     }
 
     void Update()
     {
-        //Debug.Log(joints[0].angle);
+        float distanceToTarget = Vector3.Distance(endEffector.position, target.position);
+        Debug.Log("distanceToTarget:" + distanceToTarget);
     }
 }
