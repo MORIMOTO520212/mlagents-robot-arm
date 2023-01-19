@@ -102,7 +102,7 @@ public class RobotArmAgent : Agent
         }
         else if (distanceToTarget < 0.8f)
         {
-            Debug.Log("near");
+            //Debug.Log("near");
             AddReward(0.6f);
             EndEpisode();
         }
@@ -116,7 +116,7 @@ public class RobotArmAgent : Agent
                 (250 <= ax.transform.localEulerAngles.z && ax.transform.localEulerAngles.z <= 360))
                 )
             {
-                Debug.Log("threshold:" + ax.transform.localEulerAngles.z);
+                //Debug.Log("threshold:" + ax.transform.localEulerAngles.z);
                 AddReward(-1.0f);
                 EndEpisode();
             }
