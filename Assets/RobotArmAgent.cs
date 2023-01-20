@@ -4,28 +4,39 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 
 public class RobotArmAgent : Agent
 {
-    public int force;             // アームの力
     public Transform target;      // ターゲットオブジェクト
     public Transform endEffector; // エンドエフェクタオブジェクト
-
     private GameObject[] axis = new GameObject[2];
-    
+    private Vector3[] targetPositionList;
 
     // 1度限りの実行
     public override void Initialize()
     {
+        targetPositionList = new [] {
+            new Vector3(0.096f, 0.636f, 0f),
+            new Vector3(0.861f, -0.783f, 0f),
+            new Vector3(1.288f, -0.25f, 0f),
+            new Vector3(1.288f, 0.358f, 0f),
+            new Vector3(-1.625f, 0.358f, 0f),
+            new Vector3(0.778f, -0.77f, 0f),
+            new Vector3(-1.129f, -0.503f, 0f),
+            new Vector3(-1.17f, 0.883f, 0f),
+            new Vector3(-0.617f, 0.5f, 0f),
+        };
+
         // 軸オブジェクトの取得
         axis[0] = this.transform.Find("Axis1").gameObject;
         axis[1] = axis[0].transform.Find("Axis2").gameObject;
         // useMotor
-        axis[0].GetComponent<HingeJoint>().useMotor = true;
-        axis[1].GetComponent<HingeJoint>().useMotor = true;
+        axis[0].GetComponent<HingeJoint>().useMotor = false;
+        axis[1].GetComponent<HingeJoint>().useMotor = false;
         // useLimits
-        axis[0].GetComponent<HingeJoint>().useLimits = true;
-        axis[1].GetComponent<HingeJoint>().useLimits = true;
+        axis[0].GetComponent<HingeJoint>().useLimits = false;
+        axis[1].GetComponent<HingeJoint>().useLimits = false;
     }
 
     // 1エピソード限りの実行
@@ -37,21 +48,8 @@ public class RobotArmAgent : Agent
             Vector3 localAngle = ax.transform.localEulerAngles;
             localAngle.z = 0;
             ax.transform.localEulerAngles = localAngle;
-
-            // 力を0にする
-            JointMotor motor = ax.GetComponent<HingeJoint>().motor;
-            motor.force = 500;
-            motor.targetVelocity = 0;
-            
-            // limitsを初期化
-            JointLimits limits = ax.GetComponent<HingeJoint>().limits;
-            limits.min = 0;
-            limits.max = 0;
-
-            // 設定を代入
-            ax.GetComponent<HingeJoint>().motor = motor;
-            ax.GetComponent<HingeJoint>().limits = limits;
         }
+        target.localPosition = targetPositionList[Random.Range(0, targetPositionList.Length)];
     }
 
     // エージェントのベクトル観測を追加する
@@ -61,34 +59,16 @@ public class RobotArmAgent : Agent
         sensor.AddObservation(endEffector.localPosition);       // エンドエフェクタの位置
         sensor.AddObservation(axis[0].transform.localEulerAngles.z); // 軸の角度
         sensor.AddObservation(axis[1].transform.localEulerAngles.z); // 軸の角度
+        sensor.AddObservation(Vector3.Distance(endEffector.position, target.position));
     }
 
     // 提供されたアクションに基づいて、エージェントの動作を指定する
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        float setForce = 50;
-
         // アームを動かす
         for (int i = 0; i < 2; i++)
         {
-            JointMotor motor = axis[i].GetComponent<HingeJoint>().motor;
-            JointLimits limits = axis[i].GetComponent<HingeJoint>().limits;
-
-            // ジョイントの回転方向
-            if (actionBuffers.DiscreteActions[i] == 0) // 右回転
-            {
-                motor.targetVelocity = setForce * -1;
-                limits.min = actionBuffers.ContinuousActions[i] * -100;
-            }
-            else if (actionBuffers.DiscreteActions[i] == 1) // 左回転
-            {
-                motor.targetVelocity = setForce * 1;
-                limits.max = actionBuffers.ContinuousActions[i] * 100;
-            }
-
-            // 設定を代入
-            axis[i].GetComponent<HingeJoint>().motor = motor;
-            axis[i].GetComponent<HingeJoint>().limits = limits;
+            axis[i].transform.Rotate(0, 0, actionBuffers.ContinuousActions[i]);
         }
 
         // ターゲットに接触したらプラス報酬
@@ -97,14 +77,12 @@ public class RobotArmAgent : Agent
         if (distanceToTarget < 0.3f)
         {
             Debug.Log("goal");
-            AddReward(2.0f); // 報酬
+            AddReward(1.0f);
             EndEpisode();
         }
-        else if (distanceToTarget < 0.8f)
+        else if (distanceToTarget < 1.0f)
         {
-            //Debug.Log("near");
-            AddReward(0.6f);
-            EndEpisode();
+            AddReward(0.5f);
         }
 
         // 関節の角度が閾値外であればマイナス報酬
@@ -116,11 +94,11 @@ public class RobotArmAgent : Agent
                 (250 <= ax.transform.localEulerAngles.z && ax.transform.localEulerAngles.z <= 360))
                 )
             {
-                //Debug.Log("threshold:" + ax.transform.localEulerAngles.z);
                 AddReward(-1.0f);
                 EndEpisode();
             }
         }
+        AddReward(-0.001f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
