@@ -6,7 +6,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 
-public class RobotArmAgent : Agent
+public partial class RobotArmAgent : Agent
 {
     public Transform target;      // ターゲットオブジェクト
     public Transform endEffector; // エンドエフェクタオブジェクト
@@ -17,7 +17,9 @@ public class RobotArmAgent : Agent
     public override void Initialize()
     {
         targetPositionList = new [] {
-            new Vector3(0.096f, 0.636f, 0f),
+            new Vector3(0.429f, 1.172f, 0f),
+            new Vector3(-0.759f, 1.172f, 0f),
+            /*new Vector3(0.096f, 0.636f, 0f),
             new Vector3(0.861f, -0.783f, 0f),
             new Vector3(1.288f, -0.25f, 0f),
             new Vector3(1.288f, 0.358f, 0f),
@@ -25,7 +27,7 @@ public class RobotArmAgent : Agent
             new Vector3(0.778f, -0.77f, 0f),
             new Vector3(-1.129f, -0.503f, 0f),
             new Vector3(-1.17f, 0.883f, 0f),
-            new Vector3(-0.617f, 0.5f, 0f),
+            new Vector3(-0.617f, 0.5f, 0f),*/
         };
 
         // 軸オブジェクトの取得
@@ -55,21 +57,32 @@ public class RobotArmAgent : Agent
     // エージェントのベクトル観測を追加する
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(target.localPosition);            // ターゲットの位置
-        sensor.AddObservation(endEffector.localPosition);       // エンドエフェクタの位置
+        sensor.AddObservation(target.position);            // ターゲットの位置
+        sensor.AddObservation(endEffector.position);       // エンドエフェクタの位置
         sensor.AddObservation(axis[0].transform.localEulerAngles.z); // 軸の角度
         sensor.AddObservation(axis[1].transform.localEulerAngles.z); // 軸の角度
         sensor.AddObservation(Vector3.Distance(endEffector.position, target.position));
     }
 
     // 提供されたアクションに基づいて、エージェントの動作を指定する
-    public override void OnActionReceived(ActionBuffers actionBuffers)
+    public override void OnActionReceived(ActionBuffers actions)
     {
         // アームを動かす
         for (int i = 0; i < 2; i++)
-        {
-            axis[i].transform.Rotate(0, 0, actionBuffers.ContinuousActions[i]);
+        {  
+            switch (actions.DiscreteActions[i])
+            {
+                case 0:
+                    axis[i].transform.Rotate(0, 0, -1);
+                    break;
+                case 1:
+                    axis[i].transform.Rotate(0, 0, 1);
+                    break;
+                default:
+                    break;
+            }
         }
+        //Debug.Log(actions.DiscreteActions[0] + "  " + actions.DiscreteActions[1]);
 
         // ターゲットに接触したらプラス報酬
         float distanceToTarget = Vector3.Distance(endEffector.position, target.position);
@@ -77,13 +90,14 @@ public class RobotArmAgent : Agent
         if (distanceToTarget < 0.3f)
         {
             Debug.Log("goal");
-            AddReward(1.0f);
+            AddReward(0.6f);
             EndEpisode();
         }
+        /*
         else if (distanceToTarget < 1.0f)
         {
             AddReward(0.5f);
-        }
+        }*/
 
         // 関節の角度が閾値外であればマイナス報酬
         // 閾値:-110~110°
@@ -94,11 +108,10 @@ public class RobotArmAgent : Agent
                 (250 <= ax.transform.localEulerAngles.z && ax.transform.localEulerAngles.z <= 360))
                 )
             {
-                AddReward(-1.0f);
+                AddReward(-0.1f);
                 EndEpisode();
             }
         }
-        AddReward(-0.001f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -106,5 +119,9 @@ public class RobotArmAgent : Agent
         var continuousActionsOut = actionsOut.ContinuousActions;
         continuousActionsOut[0] = Input.GetAxis("Horizontal");
         continuousActionsOut[1] = Input.GetAxis("Vertical");
+    }
+
+    void Update()
+    {
     }
 }
