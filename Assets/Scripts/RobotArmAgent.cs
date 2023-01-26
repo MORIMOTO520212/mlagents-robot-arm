@@ -8,10 +8,13 @@ using Unity.MLAgents.Policies;
 
 public partial class RobotArmAgent : Agent
 {
+    public bool isTraining;
     public Transform target;      // ターゲットオブジェクト
     public Transform endEffector; // エンドエフェクタオブジェクト
-    private GameObject[] axis = new GameObject[2];
+
+    private GameObject[] axis = new GameObject[2]; // 軸
     private Vector3[] targetPositionList;
+    private float prevBest;
 
     // 1度限りの実行
     public override void Initialize()
@@ -52,6 +55,9 @@ public partial class RobotArmAgent : Agent
             ax.transform.localEulerAngles = localAngle;
         }
         target.localPosition = targetPositionList[Random.Range(0, targetPositionList.Length)];
+
+        // 前の距離prevBestの初期化
+        prevBest = Vector3.Distance(endEffector.position, target.position);
     }
 
     // エージェントのベクトル観測を追加する
@@ -67,6 +73,8 @@ public partial class RobotArmAgent : Agent
     // 提供されたアクションに基づいて、エージェントの動作を指定する
     public override void OnActionReceived(ActionBuffers actions)
     {
+        float beginDistance = Vector3.Distance(endEffector.position, target.position);
+
         // アームを動かす
         for (int i = 0; i < 2; i++)
         {  
@@ -85,33 +93,35 @@ public partial class RobotArmAgent : Agent
         //Debug.Log(actions.DiscreteActions[0] + "  " + actions.DiscreteActions[1]);
 
         // ターゲットに接触したらプラス報酬
-        float distanceToTarget = Vector3.Distance(endEffector.position, target.position);
- 
-        if (distanceToTarget < 0.3f)
+        float distance = Vector3.Distance(endEffector.position, target.position);
+
+        // 以前の距離に近づくとマイナス報酬が小さくなっていく
+        if (distance > prevBest)
         {
-            Debug.Log("goal");
-            AddReward(0.6f);
+            AddReward(prevBest - distance);
+        }
+        // 以前の距離より近くなるとプラス報酬
+        else
+        {
+            float distanceDiff = beginDistance - distance;
+            AddReward(distanceDiff);
+            prevBest = distance;
+        }
+
+        // ターゲットに到達したらボーナス報酬
+        if (distance < 0.3f)
+        {
+            //AddReward(0.6f);
+        }
+
+        // 床面に当たった場合、ペナルティ
+        if (endEffector.position.y < 0.3)
+        {
+            AddReward(-1f);
             EndEpisode();
         }
-        /*
-        else if (distanceToTarget < 1.0f)
-        {
-            AddReward(0.5f);
-        }*/
 
-        // 関節の角度が閾値外であればマイナス報酬
-        // 閾値:-110~110°
-        foreach (GameObject ax in axis)
-        {
-            if (
-                !((-110 <= ax.transform.localEulerAngles.z && ax.transform.localEulerAngles.z <= 110) || 
-                (250 <= ax.transform.localEulerAngles.z && ax.transform.localEulerAngles.z <= 360))
-                )
-            {
-                AddReward(-0.1f);
-                EndEpisode();
-            }
-        }
+        AddReward(-0.0001f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

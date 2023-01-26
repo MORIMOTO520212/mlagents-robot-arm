@@ -1,0 +1,47 @@
+{
+    "NearSingularity": {
+        "checkpoints": [
+            {
+                "steps": 499967,
+                "file_path": "results\\NearSingularity03\\NearSingularity\\NearSingularity-499967.onnx",
+                "reward": -0.49960002303123474,
+                "creation_time": 1674753450.9102707,
+                "auxillary_file_paths": [
+                    "results\\NearSingularity03\\NearSingularity\\NearSingularity-499967.pt"
+                ]
+            },
+            {
+                "steps": 999948,
+                "file_path": "results\\NearSingularity03\\NearSingularity\\NearSingularity-999948.onnx",
+                "reward": -0.03873333164180318,
+                "creation_time": 1674754791.2279985,
+                "auxillary_file_paths": [
+                    "results\\NearSingularity03\\NearSingularity\\NearSingularity-999948.pt"
+                ]
+            },
+            {
+                "steps": 1030295,
+                "file_path": "results\\NearSingularity03\\NearSingularity\\NearSingularity-1030295.onnx",
+                "reward": null,
+                "creation_time": 1674754884.3347652,
+                "auxillary_file_paths": [
+                    "results\\NearSingularity03\\NearSingularity\\NearSingularity-1030295.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1030295,
+            "file_path": "results\\NearSingularity03\\NearSingularity.onnx",
+            "reward": null,
+            "creation_time": 1674754884.3347652,
+            "auxillary_file_paths": [
+                "results\\NearSingularity03\\NearSingularity\\NearSingularity-1030295.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "1.12.1+cpu"
+    }
+}

@@ -13,7 +13,7 @@ public partial class Test : MonoBehaviour
 
     void Start()
     {
-        axis1.Rotate(0, 0, 50);
+        //axis1.Rotate(0, 0, 50);
     }
 
     void Update()
